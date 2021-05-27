@@ -17,7 +17,6 @@ def _Post(url,data={}):
         'cookie' : "JSESSIONID=%s;"%cookies
     }
     return requests.post(url,headers=header,data=data).json()
-    print(233)
 
 def GetInfo():
     return _Post(InfoUrl)

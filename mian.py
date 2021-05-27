@@ -1,9 +1,11 @@
 import API
 import traceback
-username='133xxxxxxxx'#手机号码
+
+username='157XXXXXXXX'#手机号码
 password='123456'#密码
+
 #可以直接填cookies值，填了cookies就不用填账号密码了，就是cookies可能每次都有手动填
-API.cookies = "272C93D3587A140AF01836BC71F6B2333"
+API.cookies = ""
 
 #登录信息
 try:#检查cookies
@@ -40,27 +42,29 @@ try:
     for id in previewids:
         preview=API.GetPreviemInfo(id)
         print("准备开始请求任务：\n%s"%preview['preview']['previewName'])
-        for ponint in preview['chapters'][0]['points']:
-            print("请求: %s"%ponint['point_name'])
-            pointid=ponint['point_id']
-            pushinfo=API.UpdatePoint(id,pointid,9999)
-            # pushinfo={'success':'1','resultObject':"233"}
-            if pushinfo['success']:
-                print("请求成功，当前观看时间:%s"%pushinfo['resultObject'])
-                print("准备请求题目")
-                questionsid=API.GetQuestions(id,pointid)
-                #提交题目
-                if questionsid!=0:
-                    API.UpdateQuestions(id,pointid,questionsid,0)
-                    #查看答案
-                    answer=API.GetAnswer(id,pointid)
-                    print("获取到答案%s,提交->"%chr(int(answer)+65))
-                    if answer!=0:
-                        API.UpdateQuestions(id,pointid,questionsid,answer)
+        for preview_s in preview['chapters']:
+            for ponint in preview_s['points']:
+                print("请求: %s - %s"%(preview_s['chapter']['point_name'],ponint['point_name']))
+                pointid=ponint['point_id']
+                pushinfo=API.UpdatePoint(id,pointid,9999)
+                # pushinfo={'success':'1','resultObject':"233"}
+                if pushinfo['success']:
+                    print("请求成功，当前观看时间:%s"%pushinfo['resultObject'])
+                    print("准备请求题目")
+                    questionsid=API.GetQuestions(id,pointid)
+                    # questionsid=0
+                    #提交题目
+                    if questionsid!=0:
+                        API.UpdateQuestions(id,pointid,questionsid,0)
+                        #查看答案
+                        answer=API.GetAnswer(id,pointid)
+                        print("获取到答案%s,提交->"%chr(int(answer)+65))
+                        if answer!=0:
+                            API.UpdateQuestions(id,pointid,questionsid,answer)
+                    else:
+                        print("没有题目，跳过")          
                 else:
-                    print("没有题目，跳过")          
-            else:
-                print("请求失败")
+                    print("请求失败")
 except:
     print(traceback.format_exc())
     print("出现错误")
